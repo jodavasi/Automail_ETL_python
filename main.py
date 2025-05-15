@@ -1,6 +1,11 @@
-# main.py
-
+from dotenv import load_dotenv
+load_dotenv()
 import os  # Para manejar rutas, crear carpetas y verificar archivos locales
+
+# Establecer variables de entorno desde .env
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+
+
 import base64  # Para decodificar los archivos adjuntos que vienen codificados desde Gmail
 
 from google.oauth2.credentials import Credentials  # Manejo del token de acceso ya generado (token.json)
@@ -24,7 +29,7 @@ def autenticar_gmail():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(os.getenv("GMAIL_CREDENTIALS"), SCOPES)
             creds = flow.run_local_server(port=0)
         with open('token.json', 'w') as token:
             token.write(creds.to_json())

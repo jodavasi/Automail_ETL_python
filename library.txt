@@ -2,3 +2,9 @@ pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-
 
 $env:GOOGLE_APPLICATION_CREDENTIALS="C:\Users\jodav\OneDrive\Escritorio\Pozuelo\Scripts\pozuelo-uploader.json"
 
+pip install pandas
+
+pip install openpyxl
+
+pip install python-dotenv
+
