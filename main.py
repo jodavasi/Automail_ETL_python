@@ -1,18 +1,23 @@
+
+#Variables de entorno desde .env
 from dotenv import load_dotenv
 load_dotenv()
 import os  # Para manejar rutas, crear carpetas y verificar archivos locales
-
-# Establecer variables de entorno desde .env
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
-
+#Librerias google
 import base64  # Para decodificar los archivos adjuntos que vienen codificados desde Gmail
-
 from google.oauth2.credentials import Credentials  # Manejo del token de acceso ya generado (token.json)
 from google_auth_oauthlib.flow import InstalledAppFlow  # Flujo de autenticación interactivo para apps de escritorio
 from googleapiclient.discovery import build  # Construcción del cliente de la API de Gmail
 from google.cloud import storage  # Cliente para interactuar con Google Cloud Storage (GCS)
 from google.auth.transport.requests import Request  # Para refrescar las credenciales si están expiradas
+
+#librerias ETL
+from ETL.extract import obtener_rutas_adjuntos, leer_archivo_presupuesto, leer_archivo_ventas
+from ETL.transform import limpiar_datos_ventas, limpiar_datos_presupuesto
+from ETL.load import guardar_csv_local, subir_archivo_a_gcs
+
 
 # SCOPES define los permisos requeridos para acceder a Gmail
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
@@ -106,8 +111,39 @@ if __name__ == "__main__":
     for archivo in os.listdir('adjuntos'):
         ruta_archivo = os.path.join('adjuntos', archivo)
         subir_a_gcs(nombre_bucket='pozuelo', ruta_local=ruta_archivo)
+        
+    # ----------------------------------
+    # EJECUCIÓN DEL PROCESO ETL COMPLETO
+    # ----------------------------------
+    print("\n🔁 Iniciando proceso ETL...")
 
+    # Paso 4: Detectar archivos descargados
+    ruta_ventas, ruta_presupuesto = obtener_rutas_adjuntos()
 
+    if not ruta_ventas or not ruta_presupuesto:
+        print("[ERROR] Faltan archivos necesarios para el proceso ETL.")
+        exit()
 
-    # Mensaje final en consola
+    # Paso 5: Leer archivos
+    df_ventas = leer_archivo_ventas(ruta_ventas)
+    df_ppto = leer_archivo_presupuesto(ruta_presupuesto)
+
+    # Paso 6: Limpiar datos
+    df_ventas_limpio = limpiar_datos_ventas(df_ventas)
+    df_ppto_limpio = limpiar_datos_presupuesto(df_ppto)
+
+    # Obtener nombres originales con sufijo "_limpio"
+    nombre_ventas_csv = os.path.splitext(os.path.basename(ruta_ventas))[0] + "_limpio.csv"
+    nombre_ppto_csv = os.path.splitext(os.path.basename(ruta_presupuesto))[0] + "_limpio.csv"
+
+    # Paso 7: Guardar como CSV local con nombre personalizado
+    csv_ventas = guardar_csv_local(df_ventas_limpio, nombre_ventas_csv)
+    csv_ppto = guardar_csv_local(df_ppto_limpio, nombre_ppto_csv)
+
+    # Paso 8: Subir CSV limpio a GCS
+    subir_archivo_a_gcs(os.getenv("BUCKET_NAME"), csv_ventas)
+    subir_archivo_a_gcs(os.getenv("BUCKET_NAME"), csv_ppto)
+
     print("\n✅ Proceso completado con éxito.")
+
+    
