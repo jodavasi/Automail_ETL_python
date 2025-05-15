@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 load_dotenv()
 import os  # Para manejar rutas, crear carpetas y verificar archivos locales
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+BUCKET_NAME = os.getenv("BUCKET_NAME")
+BQ_PROJECT_ID = os.getenv("BQ_PROJECT_ID")
+BQ_DATASET = os.getenv("BQ_DATASET")
 
 #Librerias google
 import base64  # Para decodificar los archivos adjuntos que vienen codificados desde Gmail
@@ -16,7 +19,10 @@ from google.auth.transport.requests import Request  # Para refrescar las credenc
 #librerias ETL
 from ETL.extract import obtener_rutas_adjuntos, leer_archivo_presupuesto, leer_archivo_ventas
 from ETL.transform import limpiar_datos_ventas, limpiar_datos_presupuesto
-from ETL.load import guardar_csv_local, subir_archivo_a_gcs
+from ETL.load import guardar_csv_local, subir_archivo_a_bucket
+
+#Para bigQuery
+from ETL.load import subir_a_bigquery
 
 
 # SCOPES define los permisos requeridos para acceder a Gmail
@@ -111,7 +117,7 @@ if __name__ == "__main__":
     for archivo in os.listdir('adjuntos'):
         ruta_archivo = os.path.join('adjuntos', archivo)
         subir_a_gcs(nombre_bucket='pozuelo', ruta_local=ruta_archivo)
-        
+
     # ----------------------------------
     # EJECUCIÓN DEL PROCESO ETL COMPLETO
     # ----------------------------------
@@ -141,8 +147,14 @@ if __name__ == "__main__":
     csv_ppto = guardar_csv_local(df_ppto_limpio, nombre_ppto_csv)
 
     # Paso 8: Subir CSV limpio a GCS
-    subir_archivo_a_gcs(os.getenv("BUCKET_NAME"), csv_ventas)
-    subir_archivo_a_gcs(os.getenv("BUCKET_NAME"), csv_ppto)
+    subir_archivo_a_bucket(BUCKET_NAME, csv_ventas)
+    subir_archivo_a_bucket(BUCKET_NAME, csv_ppto)
+
+
+    #Paso 9: Carga bigQuery
+    subir_a_bigquery(df_ventas_limpio, "ventas_limpio", BQ_DATASET, BQ_PROJECT_ID)
+    subir_a_bigquery(df_ppto_limpio, "presupuesto_limpio", BQ_DATASET, BQ_PROJECT_ID)
+
 
     print("\n✅ Proceso completado con éxito.")
 
