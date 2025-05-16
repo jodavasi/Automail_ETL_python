@@ -116,7 +116,7 @@ if __name__ == "__main__":
     # Paso 4: Subir los archivos descargados a Google Cloud Storage
     for archivo in os.listdir('adjuntos'):
         ruta_archivo = os.path.join('adjuntos', archivo)
-        subir_a_gcs(nombre_bucket='pozuelo', ruta_local=ruta_archivo)
+        subir_a_gcs(nombre_bucket='pozuelotest', ruta_local=ruta_archivo)
 
     # ----------------------------------
     # EJECUCIÓN DEL PROCESO ETL COMPLETO
