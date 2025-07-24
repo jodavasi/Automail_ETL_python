@@ -1,15 +1,15 @@
-# Data Analysis Project - Pozuelo (Technical Assessment)
+# ETL Automatizado con Python, BigQuery y Power BI
 
-Este proyecto fue desarrollado como parte de un assessment técnico para una posición de **Data Scientist** en la empresa **Pozuelo**. El objetivo principal era analizar un conjunto de datos de ventas para identificar tendencias, detectar oportunidades de mejora e interpretar hallazgos clave que aporten valor al negocio.
+Este proyecto implementa una solución de ETL automatizada que permite recuperar archivos Excel desde una cuenta de correo electrónico, procesarlos con Python, almacenarlos en Google BigQuery y usarlos como fuente de datos para dashboards en Power BI.
 
-## Herramientas y tecnologías utilizadas
+## 🔧 Tecnologías utilizadas
 
-- Python 3.x  
-- Pandas  
-- Matplotlib y Seaborn  
-- Jupyter Notebook  
-- Excel  
-- Power BI (para visuales).
+- **Python 3.10+**
+- **IMAP / Email**
+- **Pandas**
+- **Google Cloud BigQuery**
+- **Power BI**
+- **crontab / tareas programadas**
 
 <img width="353" height="200" alt="image" src="https://github.com/user-attachments/assets/b1c6b027-598d-4363-ad55-a4d44cf588c0" />
 <img width="353" height="200" alt="image" src="https://github.com/user-attachments/assets/0059b334-c634-4247-be20-702e6c9e0612" />
@@ -17,62 +17,58 @@ Este proyecto fue desarrollado como parte de un assessment técnico para una pos
 <img width="366" height="200" alt="image" src="https://github.com/user-attachments/assets/6b1057b5-26b5-4817-bb03-e114c432894f" />
 <img width="233" height="217" alt="image" src="https://github.com/user-attachments/assets/2d7eb7a6-8a1e-4046-9a38-ee6d0e61c05f" />
 <img width="353" height="200" alt="image" src="https://github.com/user-attachments/assets/3fc41ce8-c57c-4a39-903a-4b2328d34019" />
+<img width="299" height="168" alt="image" src="https://github.com/user-attachments/assets/7c846f7c-f355-495f-9735-ec8c5b14d0d8" />
+
+
+## Caso de uso
+
+El objetivo del proyecto es automatizar el procesamiento de reportes financieros enviados periódicamente por correo electrónico. Este tipo de solución se aplicó a un escenario real en Grupo Pozuelo, donde era necesario consolidar archivos Excel enviados regularmente por proveedores o departamentos internos, transformarlos y analizarlos en Power BI.
+
+## ¿Qué hace este proyecto?
+
+1. **Conexión al correo electrónico**  
+   El script accede a una bandeja de entrada (por IMAP), busca correos con archivos Excel adjuntos según criterios definidos (fecha, asunto, remitente), y descarga los archivos.
+
+2. **Procesamiento de datos con pandas**  
+   Los archivos se leen con `pandas`, se transforman y limpian según las necesidades analíticas (normalización de columnas, tipos de datos, nombres estándar, columnas calculadas).
+
+3. **Carga a BigQuery**  
+   Los datos transformados se cargan en una tabla en BigQuery, permitiendo su uso en herramientas de BI como Power BI o Looker Studio.
+
+4. **Visualización en Power BI**  
+   Power BI se conecta directamente a BigQuery para consumir la información actualizada y mostrarla en dashboards interactivos.
+
+
+## Seguridad
+
+- Las credenciales de acceso al correo y a Google Cloud están gestionadas en archivos `.env` o JSON (y excluidas del repositorio con `.gitignore`).
+- Se recomienda usar un servicio de gestión de secretos o variables de entorno en producción.
+
+## Automatización
+
+El flujo puede ser programado para ejecutarse automáticamente mediante `cron` en sistemas Linux o `Task Scheduler` en Windows. También es posible implementarlo como una función en Google Cloud Functions o Cloud Run para ejecución serverless.
+
+## Resultados
+
+- Ahorro de tiempo en tareas manuales de recopilación de datos.
+- Datos actualizados automáticamente cada vez que llega un nuevo correo.
+- Dashboards conectados a una única fuente confiable en BigQuery.
+
+## Futuras mejoras
+
+- Integración con Google Drive como fuente alternativa.
+- Validación de calidad de datos antes de cargar a BigQuery.
+- Registro de logs de ejecución.
+- Notificaciones por correo o Slack al finalizar el proceso.
+
+---
+
+**Autor:** José Daniel Vargas Sibaja  
+[lineadan@gmail.com]
+[(https://www.linkedin.com/in/jodavasi/)]
 
 
 
 
 
 
-## Dataset
-
-El dataset provisto por la empresa incluía datos simulados de ventas y operaciones(Datos no reales), tales como:
-
-- ID de venta.
-- Fecha.
-- Producto.
-- Canal de distribución.
-- Región.
-- Cantidad vendida.
-- Precio unitario.
-- Cliente.
-
-## Objetivos del análisis
-
-1. **Limpieza y validación de datos**
-   - Detección de valores faltantes o inconsistencias.
-   - Conversión de tipos de datos.
-
-2. **Análisis exploratorio**
-   - Ventas por canal y región.
-   - Productos con mayor volumen y facturación.
-   - Estacionalidad o comportamiento temporal.
-   - Rentabilidad por segmento (si aplica).
-
-3. **Visualizaciones**
-   - Gráficos de barras, líneas y pastel.
-   - Mapas de calor (si aplica).
-   - Dashboards interactivos (si usaste Power BI).
-
-4. **Hallazgos clave**
-   - Identificación de productos líderes.
-   - Recomendaciones para optimizar canales.
-   - Oportunidades de crecimiento.
-
-## Resultados destacados
-
-- Se identificó que el canal **moderno** generaba el mayor volumen de ventas, pero con menor rentabilidad comparado con el canal **tradicional**.
-- Ciertos productos presentaban estacionalidad clara, especialmente en el último trimestre.
-- La región **Pacífico Central** mostró un incremento sostenido en ventas, sugiriendo oportunidad para expandir cobertura.
-
-## Recomendaciones
-
-- Optimizar campañas de marketing en regiones de alto crecimiento.
-- Reforzar inventario de productos estacionales en fechas clave.
-- Evaluar precios y márgenes por canal para aumentar rentabilidad.
-
-## Notas adicionales
-
-Este proyecto **simula** un entorno real de análisis de datos empresariales.
-Desarrollado por:
-Jose Daniel Vargas Sibaja.
-Costa Rica 🇨🇷
