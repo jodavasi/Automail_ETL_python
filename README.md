@@ -1,7 +1,7 @@
 # ETL Automatizado con Python, BigQuery y Power BI
 
 #Nota
-Los datos fueron generados aleatoriamente y no forman parte de material sensible de ninguna empresa.
+Los dataset utilizados fueron generados aleatoriamente y no forman parte de material sensible de ninguna empresa.
 
 Este proyecto implementa una solución de ETL automatizada que permite recuperar archivos Excel desde una cuenta de correo electrónico, procesarlos con Python, almacenarlos en Google BigQuery y usarlos como fuente de datos para dashboards en Power BI.
 
